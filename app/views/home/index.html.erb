@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-12">
+    <h1>Welcome to Prairie Tech Gear</h1>
+    <p>Your one-stop shop for all tech needs</p>
+  </div>
+</div>
+
+<div class="row">
+  <% @featured_products = Product.limit(4) %>
+  <% @featured_products.each do |product| %>
+    <div class="col-md-3 mb-4">
+      <div class="card h-100">
+        <% if product.images.attached? %>
+          <%= image_tag product.images.first, class: "card-img-top" %>
+        <% end %>
+        <div class="card-body">
+          <h5 class="card-title"><%= product.name %></h5>
+          <p class="card-text"><%= number_to_currency(product.price) %></p>
+          <%= link_to 'View Details', product_path(product), class: 'btn btn-primary' %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
