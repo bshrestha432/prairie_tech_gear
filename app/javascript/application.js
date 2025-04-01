@@ -5,6 +5,7 @@ require("@rails/activestorage").start()
 require("jquery")
 import "bootstrap"
 import "../stylesheets/application"
+import "@hotwierd/turbo-rails"
 
 document.addEventListener("turbolinks:load", function() {
   $('[data-toggle="tooltip"]').tooltip()

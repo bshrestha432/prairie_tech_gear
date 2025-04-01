@@ -1,32 +1,70 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h2 class="mb-4">Log in</h2>
+Rails.application.routes.draw do
+  # Health check and PWA routes
+  get "up" => "rails/health#show", as: :rails_health_check
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-        <div class="mb-3">
-          <%= f.label :email, class: "form-label" %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
-        </div>
+  # Devise for Active Admin (should come first)
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
 
-        <div class="mb-3">
-          <%= f.label :password, class: "form-label" %>
-          <%= f.password_field :password, autocomplete: "current-password", class: "form-control" %>
-        </div>
+  # Devise for regular users with explicit path
+  devise_for :users, path: 'account', path_names: {
+    sign_in: 'login',
+    sign_out: 'logout',
+    sign_up: 'register',
+    password: 'reset'
+  }, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
 
-        <% if devise_mapping.rememberable? %>
-          <div class="mb-3 form-check">
-            <%= f.check_box :remember_me, class: "form-check-input" %>
-            <%= f.label :remember_me, class: "form-check-label" %>
-          </div>
-        <% end %>
+  # Main routes
+  root "home#index"
 
-        <div class="mb-3">
-          <%= f.submit "Log in", class: "btn btn-primary" %>
-        </div>
-      <% end %>
+  # Product catalog routes
+  resources :products, only: [:index, :show] do
+    collection do
+      get 'search'
+    end
+    member do
+      post 'add_to_cart'
+    end
+    resources :reviews, only: [:create]
+  end
 
-      <%= render "devise/shared/links" %>
-    </div>
-  </div>
-</div>
+  # Shopping cart routes
+  resource :cart, only: [:show, :update, :destroy] do
+    member do
+      delete 'remove_item/:product_id', to: 'carts#remove_item', as: 'remove_item'
+      post 'checkout'
+    end
+  end
+
+  # Order processing routes
+  resources :orders, only: [:index, :show, :create] do
+    collection do
+      get 'checkout'
+      post 'process_payment'
+    end
+  end
+
+  # User account routes
+  resource :profile, only: [:show, :edit, :update]
+  get 'my_orders', to: 'profiles#orders'
+
+  # Static pages
+  get 'about', to: 'pages#about'
+  get 'contact', to: 'pages#contact'
+  get 'terms', to: 'pages#terms'
+  get 'privacy', to: 'pages#privacy'
+
+  # Error handling
+  match '/404', to: 'errors#not_found', via: :all
+  match '/500', to: 'errors#internal_error', via: :all
+
+  # Admin-only API endpoints
+  namespace :admin do
+    resources :dashboard, only: [:index]
+  end
+end

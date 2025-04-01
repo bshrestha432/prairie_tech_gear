@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get "peripherals/index"
+  get "peripherals/show"
+  get "pages/about"
+  get "pages/contact"
   # Health check and PWA routes
   get "up" => "rails/health#show", as: :rails_health_check
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
@@ -6,11 +10,11 @@ Rails.application.routes.draw do
 
   # Devise authentication routes with friendly URLs
   devise_for :admin_users, ActiveAdmin::Devise.config
-  devise_for :users, path: '', path_names: {
+  devise_for :users, path: '', as: :user, path_names: {
     sign_in: 'login',
     sign_out: 'logout',
     sign_up: 'register',
-    password: 'reset'
+    password: 'reset'rails g active_admin:install User
   }, controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations'
@@ -23,19 +27,15 @@ Rails.application.routes.draw do
   root "home#index"
 
   # Product catalog routes
-  resources :categories, only: [:index, :show] do
-    resources :products, only: [:index]
-  end
-
-  resources :products, only: [:index, :show] do
-    collection do
-      get 'search'
+    resources :products, only: [:index, :show] do
+      collection do
+        get 'search'
+      end
+      member do
+        post 'add_to_cart'
+      end
+      resources :reviews, only: [:create]
     end
-    member do
-      post 'add_to_cart'
-    end
-    resources :reviews, only: [:create]
-  end
 
   # Shopping cart routes
   resource :cart, only: [:show, :update, :destroy] do

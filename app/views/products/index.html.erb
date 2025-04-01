@@ -1,28 +1,37 @@
-<div class="row">
-  <div class="col-12">
-    <h1>All Products</h1>
-  </div>
-</div>
+<div class="container mt-4">
+  <%# Choose ONE of these display methods - not both %>
 
-<div class="row">
-  <% @products.each do |product| %>
-    <div class="col-md-4 mb-4">
-      <div class="card h-100">
-        <% if product.images.attached? %>
-          <%= image_tag product.images.first, class: "card-img-top" %>
-        <% end %>
-        <div class="card-body">
-          <h5 class="card-title"><%= product.name %></h5>
-          <p class="card-text"><%= number_to_currency(product.price) %></p>
-          <%= link_to 'View Details', product_path(product), class: 'btn btn-primary' %>
+  <%# OPTION 1: Bootstrap Card Layout (recommended) %>
+  <div class="row">
+    <% @products.each do |product| %>
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card h-100">
+          <% if product.images.attached? %>
+            <%= image_tag product.images.first, class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
+          <% end %>
+          <div class="card-body">
+            <h5 class="card-title"><%= product.name %></h5>
+            <p class="card-text"><%= number_to_currency(product.price) %></p>
+          </div>
+          <div class="card-footer">
+            <%= link_to 'View Details', product_path(product), class: 'btn btn-primary' %>
+          </div>
         </div>
       </div>
+    <% end %>
+  </div>
+
+  <%# OR OPTION 2: Using Partial %>
+  <%# <div class="products">
+    <% @products.each do |product| %>
+      <%# <%= render 'product', product: product %>
+    <%# <% end %>
+  <%# </div> %>
+
+  <%# Pagination controls - only show if more than one page exists %>
+  <% if @products.total_pages > 1 %>
+    <div class="pagination justify-content-center mt-4">
+      <%= paginate @products, theme: 'twitter-bootstrap-4' %>
     </div>
   <% end %>
-</div>
-
-<div class="row">
-  <div class="col-12">
-    <%= paginate @products %>
-  </div>
 </div>

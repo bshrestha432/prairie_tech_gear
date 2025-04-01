@@ -1,0 +1,15 @@
+<div class="container py-5">
+  <h1>Peripherals</h1>
+  <div class="row">
+    <% @peripherals.each do |peripheral| %>
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%= peripheral.name %></h5>
+            <%= link_to 'View Details', peripheral_path(peripheral), class: 'btn btn-primary' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

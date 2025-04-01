@@ -1,12 +1,18 @@
 source "https://rubygems.org"
 
+gem 'will_paginate'
+
+gem 'bootstrap-will_paginate'
+
 gem 'devise'
+
+gem 'kaminari'
+
+gem 'ransack'
 
 gem 'activeadmin'
 
 gem 'faker'
-
-gem 'kaminari'
 
 gem 'sass-rails'
 
